@@ -1,0 +1,37 @@
+# imagem base
+FROM python:3.11-slim
+
+# evita buffer de print
+ENV PYTHONUNBUFFERED=1
+
+# instala dependências do sistema (necessárias pro playwright)
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    gnupg \
+    unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+# diretório de trabalho
+WORKDIR /app
+
+# copia arquivos
+COPY . .
+
+# instala dependências python
+RUN pip install --no-cache-dir \
+    scrapy \
+    scrapy-playwright \
+    playwright \
+    pandas \
+    openpyxl \
+    schedule \
+    requests \
+    python-dotenv \
+    openai
+
+# instala browsers do playwright
+RUN python -m playwright install --with-deps
+
+# comando padrão
+CMD ["python", "main.py"]
